@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\vsyasm.1.3.0.3\build\vsyasm.props" Condition="Exists('packages\vsyasm.1.3.0.3\build\vsyasm.props')" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="crc\crc64_base.c" />
+    <ClCompile Include="crc\crc_base.c" />
+    <ClCompile Include="crc\crc_base_aliases.c" />
+    <ClCompile Include="erasure_code\ec_base.c" />
+    <ClCompile Include="erasure_code\ec_base_aliases.c" />
+    <ClCompile Include="erasure_code\ec_highlevel_func.c" />
+    <ClCompile Include="igzip\encode_df.c" />
+    <ClCompile Include="igzip\crc32_gzip_base.c" />
+    <ClCompile Include="igzip\flatten_ll.c" />
+    <ClCompile Include="igzip\hufftables_c.c" />
+    <ClCompile Include="igzip\huff_codes.c" />
+    <ClCompile Include="igzip\igzip.c" />
+    <ClCompile Include="igzip\igzip_base.c" />
+    <ClCompile Include="igzip\igzip_icf_base.c" />
+    <ClCompile Include="igzip\igzip_base_aliases.c" />
+    <ClCompile Include="igzip\igzip_inflate.c" />
+    <ClCompile Include="igzip\proc_heap_base.c" />
+    <ClCompile Include="raid\raid_base.c" />
+    <ClCompile Include="raid\raid_base_aliases.c" />
+    <yasm Include="igzip\igzip_body_*.asm" />
+    <yasm Include="erasure_code\gf_*.asm" />
+    <yasm Include="raid\pq_vect_*.asm" />
+    <yasm Include="raid\pq_check_sse.asm" />
+    <yasm Include="raid\pq_gen_sse.asm" />
+    <yasm Include="raid\pq_gen_avx*.asm" />
+    <yasm Include="raid\xor_*.asm" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{CA024878-ACBC-444C-BA83-4CB9768D965A}</ProjectGuid>
+    <TargetName>isa-l</TargetName>
+    <RootNamespace>$(TargetName)</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <Includes>erasure_code;raid;crc;igzip;include;</Includes>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ItemDefinitionGroup>
+    <YASM>
+      <IncludePaths>$(Includes)%(IncludePaths)</IncludePaths>
+      <Platform>win64</Platform>
+    </YASM>
+    <ClCompile>
+      <PreprocessorDefinitions>_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(Includes)%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4018;4146;4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <ModuleDefinitionFile>isa-l.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\vsyasm.1.3.0.3\build\vsyasm.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\vsyasm.1.3.0.3\build\vsyasm.props'))" />
+    <Error Condition="!Exists('packages\vsyasm.1.3.0.3\build\vsyasm.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\vsyasm.1.3.0.3\build\vsyasm.targets'))" />
+  </Target>
+  <Import Project="packages\vsyasm.1.3.0.3\build\vsyasm.targets" Condition="Exists('packages\vsyasm.1.3.0.3\build\vsyasm.targets')" />
+</Project>
